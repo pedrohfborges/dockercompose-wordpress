@@ -1,0 +1,42 @@
+version: '3.1'
+
+networks:
+    network-wordpress:
+        driver: bridge
+
+services:
+    mysql:
+        container_name: mysql
+        image: mysql
+        restart: always
+        networks:
+            - network-wordpress
+
+        volumes:
+            - './mysql:/var/lib/data'
+        environment:
+            - MYSQL_ROOT_PASSWORD=senha123
+            - MYSQL_DATABASE=db
+            - MYSQL_USER=user
+            - MYSQL_PASSWORD=senha123
+
+            
+    wordpress:
+        container_name: wordpress
+        image: wordpress:6.3.2-apache
+        networks:
+            - network-wordpress
+        restart: always
+        links:
+            - mysql
+        depends_on:
+            - mysql
+        ports:
+            - 8080:80
+        volumes:
+            - '.wordpress:/var/www/html'
+        environment:
+            WORDPRESS_DB_HOST: mysql
+            WORDPRESS_DB_USER: user
+            WORDPRESS_DB_PASSWORD: senha123
+            WORDPRESS_DB_NAME: db
